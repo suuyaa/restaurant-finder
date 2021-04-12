@@ -1,8 +1,11 @@
 require("dotenv").config();
+
 const { json } = require("express");
 const express = require("express");
 const db = require("./db/index");
 const cors = require("cors");
+const path = require("path");
+const port = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.json());
@@ -10,6 +13,13 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cors());
+// app.use(express.static(path.join(__dirname, "client/build")));
+// console.log(process.env);
+console.log(process.env.NODE_ENV);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/build")));
+}
 
 app.get("/api/restaurants", async (req, res) => {
   try {
@@ -115,7 +125,10 @@ app.post("/api/restaurants/:id/addReview", async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 3001;
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build/index.html"));
+});
+
 app.listen(port, () => {
   console.log(`Server is up and listening on ${port}`);
 });
