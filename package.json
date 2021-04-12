@@ -8,14 +8,16 @@
     "npm": "7.5.6"
   },
   "scripts": {
-    "start": "NODE_ENV=production nodemon server.js",
-    "dev": "NODE_ENV=dev nodemon server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^6.0.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
