@@ -5,14 +5,42 @@ const devConfig = `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD
 
 const proConfig = process.env.DATABASE_URL;
 
-let connectionString =
-  process.env.NODE_ENV === "production" ? proConfig : devConfig;
+let config = {};
 
-console.log("DBURL:", connectionString);
+if (process.env.NODE_ENV === "production") {
+  config = {
+    ssl: { require: true, rejectUnauthorized: false },
+  };
 
-const pool = new Pool({
-  connectionString: connectionString,
-});
+  config.user =
+    process.env.NODE_ENV === "production"
+      ? process.env.PGUSER
+      : process.env.PGUSER_DEV;
+
+  config.password =
+    process.env.NODE_ENV === "production"
+      ? process.env.PGPASSWORD
+      : process.env.PGPASSWORD_DEV;
+
+  config.host =
+    process.env.NODE_ENV === "production"
+      ? process.env.PGHOST
+      : process.env.PGHOST_DEV;
+
+  config.port =
+    process.env.NODE_ENV === "production"
+      ? process.env.PGPORT
+      : process.env.PGPORT_DEV;
+
+  config.database =
+    process.env.NODE_ENV === "production"
+      ? process.env.PGDATABASE
+      : process.env.PGDATABASE_DEV;
+}
+
+console.log(config);
+
+const pool = new Pool(config);
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
